@@ -1,9 +1,7 @@
 package main
 
-import (
-	"async-book-shelf/src/config"
-)
+import "async-book-shelf/src/cmd"
 
 func main() {
-	config.Load()
+	cmd.Init()
 }

@@ -8,19 +8,25 @@ import (
 )
 
 const (
-	address  = "RABBITMQ_ADDRESS"
-	port     = "RABBITMQ_PORT"
-	user     = "RABBITMQ_USER"
-	password = "RABBITMQ_PASSWORD"
+	address      = "RABBITMQ_ADDRESS"
+	port         = "RABBITMQ_PORT"
+	user         = "RABBITMQ_USER"
+	password     = "RABBITMQ_PASSWORD"
+	exchangeName = "RABBITMQ_EXCHANGE_NAME"
+	exchangeType = "RABBITMQ_EXCHANGE_TYPE"
 )
 
 var RabbitMQURL = ""
+var RabbitMQExchangeName = ""
+var RabbitMQExchangeType = ""
 
 type rabbitMQ struct {
-	address  string
-	port     string
-	user     string
-	password string
+	address      string
+	port         string
+	user         string
+	password     string
+	exchangeName string
+	exchangeType string
 }
 
 func load(config *rabbitMQ) {
@@ -28,6 +34,8 @@ func load(config *rabbitMQ) {
 	config.port = os.Getenv(port)
 	config.user = os.Getenv(user)
 	config.password = os.Getenv(password)
+	config.exchangeName = os.Getenv(exchangeName)
+	config.exchangeType = os.Getenv(exchangeType)
 }
 
 func validate(config *rabbitMQ) {
@@ -49,6 +57,14 @@ func validate(config *rabbitMQ) {
 		invalidVariables = append(invalidVariables, password)
 	}
 
+	if config.exchangeName == "" {
+		invalidVariables = append(invalidVariables, exchangeName)
+	}
+
+	if config.exchangeType == "" {
+		invalidVariables = append(invalidVariables, exchangeType)
+	}
+
 	if len(invalidVariables) > 0 {
 		variables := strings.Join(invalidVariables, ", ")
 		message := fmt.Sprintf("Empty environment variable(s): [%s]", variables)
@@ -68,4 +84,6 @@ func loadRabbitMQ() {
 		config.address,
 		config.port,
 	)
+	RabbitMQExchangeName = config.exchangeName
+	RabbitMQExchangeType = config.exchangeType
 }
