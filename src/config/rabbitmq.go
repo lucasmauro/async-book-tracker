@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	address      = "RABBITMQ_ADDRESS"
-	port         = "RABBITMQ_PORT"
-	user         = "RABBITMQ_USER"
-	password     = "RABBITMQ_PASSWORD"
-	exchangeName = "RABBITMQ_EXCHANGE_NAME"
-	exchangeType = "RABBITMQ_EXCHANGE_TYPE"
+	rabbitmq_address      = "RABBITMQ_ADDRESS"
+	rabbitmq_port         = "RABBITMQ_PORT"
+	rabbitmq_user         = "RABBITMQ_USER"
+	rabbitmq_password     = "RABBITMQ_PASSWORD"
+	rabbitmq_exchangeName = "RABBITMQ_EXCHANGE_NAME"
+	rabbitmq_exchangeType = "RABBITMQ_EXCHANGE_TYPE"
 )
 
 var RabbitMQURL = ""
@@ -29,40 +29,40 @@ type rabbitMQ struct {
 	exchangeType string
 }
 
-func load(config *rabbitMQ) {
-	config.address = os.Getenv(address)
-	config.port = os.Getenv(port)
-	config.user = os.Getenv(user)
-	config.password = os.Getenv(password)
-	config.exchangeName = os.Getenv(exchangeName)
-	config.exchangeType = os.Getenv(exchangeType)
+func (config *rabbitMQ) load() {
+	config.address = os.Getenv(rabbitmq_address)
+	config.port = os.Getenv(rabbitmq_port)
+	config.user = os.Getenv(rabbitmq_user)
+	config.password = os.Getenv(rabbitmq_password)
+	config.exchangeName = os.Getenv(rabbitmq_exchangeName)
+	config.exchangeType = os.Getenv(rabbitmq_exchangeType)
 }
 
-func validate(config *rabbitMQ) {
+func (config *rabbitMQ) validate() {
 	var invalidVariables []string
 
 	if config.address == "" {
-		invalidVariables = append(invalidVariables, address)
+		invalidVariables = append(invalidVariables, rabbitmq_address)
 	}
 
 	if config.port == "" {
-		invalidVariables = append(invalidVariables, port)
+		invalidVariables = append(invalidVariables, rabbitmq_port)
 	}
 
 	if config.user == "" {
-		invalidVariables = append(invalidVariables, user)
+		invalidVariables = append(invalidVariables, rabbitmq_user)
 	}
 
 	if config.password == "" {
-		invalidVariables = append(invalidVariables, password)
+		invalidVariables = append(invalidVariables, rabbitmq_password)
 	}
 
 	if config.exchangeName == "" {
-		invalidVariables = append(invalidVariables, exchangeName)
+		invalidVariables = append(invalidVariables, rabbitmq_exchangeName)
 	}
 
 	if config.exchangeType == "" {
-		invalidVariables = append(invalidVariables, exchangeType)
+		invalidVariables = append(invalidVariables, rabbitmq_exchangeType)
 	}
 
 	if len(invalidVariables) > 0 {
@@ -74,8 +74,8 @@ func validate(config *rabbitMQ) {
 
 func loadRabbitMQ() {
 	var config rabbitMQ
-	load(&config)
-	validate(&config)
+	config.load()
+	config.validate()
 
 	RabbitMQURL = fmt.Sprintf(
 		"amqp://%s:%s@%s:%s/",

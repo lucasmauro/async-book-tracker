@@ -12,4 +12,5 @@ func Load() {
 	}
 
 	loadRabbitMQ()
+	loadElasticSearch()
 }
