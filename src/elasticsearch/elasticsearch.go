@@ -4,7 +4,7 @@ import (
 	"async-book-shelf/src/config"
 	"async-book-shelf/src/failure"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 func GetESClient() *elastic.Client {

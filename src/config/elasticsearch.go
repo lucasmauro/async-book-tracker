@@ -12,15 +12,18 @@ const (
 	elasticsearch_port     = "ELASTICSEARCH_PORT"
 	elasticsearch_user     = "ELASTICSEARCH_USER"
 	elasticsearch_password = "ELASTICSEARCH_PASSWORD"
+	elasticsearch_index    = "ELASTICSEARCH_INDEX"
 )
 
 var ElasticSearchURL = ""
+var ElasticSearchIndex = ""
 
 type elasticsearch struct {
 	address  string
 	port     string
 	user     string
 	password string
+	index    string
 }
 
 func (config *elasticsearch) load() {
@@ -28,6 +31,7 @@ func (config *elasticsearch) load() {
 	config.port = os.Getenv(elasticsearch_port)
 	config.user = os.Getenv(elasticsearch_user)
 	config.password = os.Getenv(elasticsearch_password)
+	config.index = os.Getenv(elasticsearch_index)
 }
 
 func (config *elasticsearch) validate() {
@@ -49,6 +53,10 @@ func (config *elasticsearch) validate() {
 		invalidVariables = append(invalidVariables, elasticsearch_password)
 	}
 
+	if config.index == "" {
+		invalidVariables = append(invalidVariables, elasticsearch_index)
+	}
+
 	if len(invalidVariables) > 0 {
 		variables := strings.Join(invalidVariables, ", ")
 		message := fmt.Sprintf("Empty environment variable(s): [%s]", variables)
@@ -68,4 +76,5 @@ func loadElasticSearch() {
 		config.address,
 		config.port,
 	)
+	ElasticSearchIndex = config.index
 }
