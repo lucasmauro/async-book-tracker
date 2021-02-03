@@ -47,3 +47,13 @@ func (service BookService) Get(key string, value interface{}) ([]Book, error) {
 
 	return books, nil
 }
+
+func (service BookService) Insert(book Book) error {
+	content, err := json.Marshal(book)
+	if err != nil {
+		return err
+	}
+
+	service.amqp.Publish(config.RabbitMQInsertionRoutingKey, string(content))
+	return nil
+}
