@@ -3,6 +3,7 @@ package main
 import (
 	"async-book-shelf/src/cmd"
 	"async-book-shelf/src/failure"
+	"async-book-shelf/src/server"
 	"os"
 )
 
@@ -20,6 +21,12 @@ func getArg(index int) string {
 
 func main() {
 	mode := getArg(mode)
+
+	if mode == "serve" {
+		server.Serve()
+		return
+	}
+
 	content := getArg(content)
 
 	actions := map[string]func(string){
@@ -29,7 +36,7 @@ func main() {
 	action, ok := actions[mode]
 
 	if !ok {
-		failure.Fail("Please provide a valid option: [insert]")
+		failure.Fail("Please provide a valid option: [serve|insert]")
 	}
 
 	action(content)

@@ -11,6 +11,7 @@ func Load() {
 		failure.FailOnError(err, "Unable to load godotenv")
 	}
 
+	loadServer()
 	loadRabbitMQ()
 	loadElasticSearch()
 }
