@@ -33,3 +33,19 @@ func (writer BookWriter) Publish(message []byte) {
 		log.Printf("Unable to publish book: %s\n", err)
 	}
 }
+
+func (writer BookWriter) Delete(message []byte) {
+	ctx := context.Background()
+	bookId := string(message)
+
+	_, err := writer.
+		elastic.
+		Delete().
+		Index(config.ElasticSearchIndex).
+		Id(bookId).
+		Do(ctx)
+
+	if err != nil {
+		log.Printf("Unable to delete book: %s\n", err)
+	}
+}

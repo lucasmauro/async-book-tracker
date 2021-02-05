@@ -15,12 +15,14 @@ const (
 	rabbitmq_exchangeName        = "RABBITMQ_EXCHANGE_NAME"
 	rabbitmq_exchangeType        = "RABBITMQ_EXCHANGE_TYPE"
 	rabbitmq_insertionRoutingKey = "RABBITMQ_INSERTION_ROUTING_KEY"
+	rabbitmq_deletionRoutingKey  = "RABBITMQ_DELETION_ROUTING_KEY"
 )
 
 var RabbitMQURL = ""
 var RabbitMQExchangeName = ""
 var RabbitMQExchangeType = ""
 var RabbitMQInsertionRoutingKey = ""
+var RabbitMQDeletionRoutingKey = ""
 
 type rabbitMQ struct {
 	address             string
@@ -30,6 +32,7 @@ type rabbitMQ struct {
 	exchangeName        string
 	exchangeType        string
 	insertionRoutingKey string
+	deletionRoutingKey  string
 }
 
 func (config *rabbitMQ) load() {
@@ -40,6 +43,7 @@ func (config *rabbitMQ) load() {
 	config.exchangeName = os.Getenv(rabbitmq_exchangeName)
 	config.exchangeType = os.Getenv(rabbitmq_exchangeType)
 	config.insertionRoutingKey = os.Getenv(rabbitmq_insertionRoutingKey)
+	config.deletionRoutingKey = os.Getenv(rabbitmq_deletionRoutingKey)
 }
 
 func (config *rabbitMQ) validate() {
@@ -73,6 +77,10 @@ func (config *rabbitMQ) validate() {
 		invalidVariables = append(invalidVariables, rabbitmq_insertionRoutingKey)
 	}
 
+	if config.deletionRoutingKey == "" {
+		invalidVariables = append(invalidVariables, rabbitmq_deletionRoutingKey)
+	}
+
 	if len(invalidVariables) > 0 {
 		variables := strings.Join(invalidVariables, ", ")
 		message := fmt.Sprintf("Empty environment variable(s): [%s]", variables)
@@ -95,4 +103,5 @@ func loadRabbitMQ() {
 	RabbitMQExchangeName = config.exchangeName
 	RabbitMQExchangeType = config.exchangeType
 	RabbitMQInsertionRoutingKey = config.insertionRoutingKey
+	RabbitMQDeletionRoutingKey = config.deletionRoutingKey
 }
