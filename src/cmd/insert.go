@@ -4,9 +4,9 @@ import (
 	"async-book-shelf/src/amqp"
 	"async-book-shelf/src/book"
 	"async-book-shelf/src/config"
-	"async-book-shelf/src/elasticsearch"
 	"async-book-shelf/src/failure"
 	"encoding/json"
+	"fmt"
 )
 
 func Insert(content string) {
@@ -16,18 +16,18 @@ func Insert(content string) {
 
 	config.Load()
 
-	elasticService := elasticsearch.GetESClient()
 	amqpService := amqp.NewRabbitMQService()
 
-	bookService := book.NewBookService(elasticService, amqpService)
+	bookWriter := book.NewBookWriter(amqpService)
 
 	var book book.Book
+	fmt.Println(content)
 	err := json.Unmarshal([]byte(content), &book)
 	if err != nil {
 		failure.FailOnError(err, "Invalid book format")
 	}
 
-	err = bookService.Insert(book)
+	err = bookWriter.Insert(book)
 	if err != nil {
 		failure.FailOnError(err, "Unable to insert")
 	}

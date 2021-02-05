@@ -1,7 +1,9 @@
 package main
 
 import (
+	"async-book-shelf/src/amqp"
 	"async-book-shelf/src/cmd"
+	"async-book-shelf/src/config"
 	"async-book-shelf/src/failure"
 	"async-book-shelf/src/server"
 	"os"
@@ -20,9 +22,14 @@ func getArg(index int) string {
 }
 
 func main() {
+	config.Load()
+
 	mode := getArg(mode)
 
 	if mode == "serve" {
+		service := amqp.NewRabbitMQService()
+		go service.Subscribe(config.RabbitMQInsertionRoutingKey)
+
 		server.Serve()
 		return
 	}

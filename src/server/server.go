@@ -9,8 +9,6 @@ import (
 )
 
 func Serve() {
-	config.Load()
-
 	r := router.Generate()
 
 	fmt.Printf("Listening on port %s\n", config.ServerPort)
