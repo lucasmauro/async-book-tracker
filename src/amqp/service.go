@@ -1,8 +1,6 @@
 package amqp
 
 import (
-	"async-book-shelf/src/amqp/publisher"
-	"async-book-shelf/src/amqp/subscriber"
 	"async-book-shelf/src/config"
 	"async-book-shelf/src/failure"
 )
@@ -30,12 +28,7 @@ func (service AMQPService) validate(routingKey string) {
 	}
 }
 
-func (service AMQPService) Publish(routingKey, content string) {
+func (service AMQPService) Subscribe(routingKey string, callback func(content []byte)) {
 	service.validate(routingKey)
-	publisher.Publish(service.exchangeName, service.exchangeType, routingKey, content)
-}
-
-func (service AMQPService) Subscribe(routingKey string) {
-	service.validate(routingKey)
-	subscriber.Subscribe(service.exchangeName, service.exchangeType, "", routingKey)
+	subscribe(service.exchangeName, service.exchangeType, "", routingKey, callback)
 }

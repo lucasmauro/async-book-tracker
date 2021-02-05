@@ -1,27 +1,35 @@
 package book
 
 import (
-	"async-book-shelf/src/amqp"
 	"async-book-shelf/src/config"
-	"encoding/json"
+	"context"
+	"log"
+
+	"github.com/olivere/elastic/v7"
 )
 
 type BookWriter struct {
-	amqp amqp.AMQPService
+	elastic *elastic.Client
 }
 
-func NewBookWriter(amqp amqp.AMQPService) BookWriter {
+func NewBookWriter(elastic *elastic.Client) BookWriter {
 	return BookWriter{
-		amqp: amqp,
+		elastic: elastic,
 	}
 }
 
-func (writer BookWriter) Insert(book Book) error {
-	content, err := json.Marshal(book)
-	if err != nil {
-		return err
-	}
+func (writer BookWriter) Publish(message []byte) {
+	ctx := context.Background()
+	book := string(message)
 
-	writer.amqp.Publish(config.RabbitMQInsertionRoutingKey, string(content))
-	return nil
+	_, err := writer.
+		elastic.
+		Index().
+		Index(config.ElasticSearchIndex).
+		BodyJson(book).
+		Do(ctx)
+
+	if err != nil {
+		log.Printf("Unable to publish book: %s\n", err)
+	}
 }

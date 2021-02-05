@@ -2,16 +2,11 @@ package main
 
 import (
 	"async-book-shelf/src/amqp"
-	"async-book-shelf/src/cmd"
+	"async-book-shelf/src/book"
 	"async-book-shelf/src/config"
-	"async-book-shelf/src/failure"
+	"async-book-shelf/src/elasticsearch"
 	"async-book-shelf/src/server"
 	"os"
-)
-
-const (
-	mode    = 1
-	content = 2
 )
 
 func getArg(index int) string {
@@ -24,27 +19,11 @@ func getArg(index int) string {
 func main() {
 	config.Load()
 
-	mode := getArg(mode)
+	amqp := amqp.NewRabbitMQService()
+	elastic := elasticsearch.GetESClient()
+	writer := book.NewBookWriter(elastic)
 
-	if mode == "serve" {
-		service := amqp.NewRabbitMQService()
-		go service.Subscribe(config.RabbitMQInsertionRoutingKey)
+	go amqp.Subscribe(config.RabbitMQInsertionRoutingKey, writer.Publish)
 
-		server.Serve()
-		return
-	}
-
-	content := getArg(content)
-
-	actions := map[string]func(string){
-		"insert": cmd.Insert,
-	}
-
-	action, ok := actions[mode]
-
-	if !ok {
-		failure.Fail("Please provide a valid option: [serve|insert]")
-	}
-
-	action(content)
+	server.Serve()
 }

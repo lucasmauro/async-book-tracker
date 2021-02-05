@@ -1,4 +1,4 @@
-package subscriber
+package amqp
 
 import (
 	"async-book-shelf/src/config"
@@ -8,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func Subscribe(exchangeName, exchangeType, queueName, routingKey string) {
+func subscribe(exchangeName, exchangeType, queueName, routingKey string, callback func(content []byte)) {
 	conn, err := amqp.Dial(config.RabbitMQURL)
 	failure.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -35,6 +35,7 @@ func Subscribe(exchangeName, exchangeType, queueName, routingKey string) {
 	go func() {
 		for message := range messages {
 			log.Printf(" [R] (Exchange: %s, Routing Key: %s) Received: %s", exchangeName, routingKey, message.Body)
+			callback(message.Body)
 		}
 	}()
 
