@@ -3,6 +3,7 @@ package book
 import (
 	"async-book-shelf/src/config"
 	"context"
+	"encoding/json"
 	"log"
 
 	"github.com/olivere/elastic/v7"
@@ -31,6 +32,29 @@ func (writer BookWriter) Publish(message []byte) {
 
 	if err != nil {
 		log.Printf("Unable to publish book: %s\n", err)
+	}
+}
+
+func (writer BookWriter) Update(message []byte) {
+	ctx := context.Background()
+
+	var book Book
+	err := json.Unmarshal(message, &book)
+	if err != nil {
+		log.Printf("Unable to update book: %s\n", err)
+		return
+	}
+
+	_, err = writer.
+		elastic.
+		Index().
+		Index(config.ElasticSearchIndex).
+		Id(book.Id).
+		BodyJson(string(message)).
+		Do(ctx)
+
+	if err != nil {
+		log.Printf("Unable to update book: %s\n", err)
 	}
 }
 

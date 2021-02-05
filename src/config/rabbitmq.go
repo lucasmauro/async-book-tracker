@@ -15,6 +15,7 @@ const (
 	rabbitmq_exchangeName        = "RABBITMQ_EXCHANGE_NAME"
 	rabbitmq_exchangeType        = "RABBITMQ_EXCHANGE_TYPE"
 	rabbitmq_insertionRoutingKey = "RABBITMQ_INSERTION_ROUTING_KEY"
+	rabbitmq_updateRoutingKey    = "RABBITMQ_UPDATE_ROUTING_KEY"
 	rabbitmq_deletionRoutingKey  = "RABBITMQ_DELETION_ROUTING_KEY"
 )
 
@@ -22,6 +23,7 @@ var RabbitMQURL = ""
 var RabbitMQExchangeName = ""
 var RabbitMQExchangeType = ""
 var RabbitMQInsertionRoutingKey = ""
+var RabbitMQUpdateRoutingKey = ""
 var RabbitMQDeletionRoutingKey = ""
 
 type rabbitMQ struct {
@@ -32,6 +34,7 @@ type rabbitMQ struct {
 	exchangeName        string
 	exchangeType        string
 	insertionRoutingKey string
+	updateRoutingKey    string
 	deletionRoutingKey  string
 }
 
@@ -43,6 +46,7 @@ func (config *rabbitMQ) load() {
 	config.exchangeName = os.Getenv(rabbitmq_exchangeName)
 	config.exchangeType = os.Getenv(rabbitmq_exchangeType)
 	config.insertionRoutingKey = os.Getenv(rabbitmq_insertionRoutingKey)
+	config.updateRoutingKey = os.Getenv(rabbitmq_updateRoutingKey)
 	config.deletionRoutingKey = os.Getenv(rabbitmq_deletionRoutingKey)
 }
 
@@ -103,5 +107,6 @@ func loadRabbitMQ() {
 	RabbitMQExchangeName = config.exchangeName
 	RabbitMQExchangeType = config.exchangeType
 	RabbitMQInsertionRoutingKey = config.insertionRoutingKey
+	RabbitMQUpdateRoutingKey = config.updateRoutingKey
 	RabbitMQDeletionRoutingKey = config.deletionRoutingKey
 }

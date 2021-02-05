@@ -24,6 +24,7 @@ func main() {
 	writer := book.NewBookWriter(elastic)
 
 	go amqp.Subscribe(config.RabbitMQInsertionRoutingKey, writer.Publish)
+	go amqp.Subscribe(config.RabbitMQUpdateRoutingKey, writer.Update)
 	go amqp.Subscribe(config.RabbitMQDeletionRoutingKey, writer.Delete)
 
 	server.Serve()

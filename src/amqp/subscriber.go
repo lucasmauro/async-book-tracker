@@ -39,6 +39,6 @@ func subscribe(exchangeName, exchangeType, queueName, routingKey string, callbac
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] (Exchange: %s, Routing Key: %s) Waiting for messages. To exit press CTRL+C", exchangeName, routingKey)
 	<-forever
 }
