@@ -39,6 +39,7 @@ func (reader BookReader) Get(key string, value interface{}) ([]Book, error) {
 		if err != nil {
 			return books, err
 		}
+		book.Id = hit.Id
 		books = append(books, book)
 	}
 
