@@ -4,12 +4,30 @@ import (
 	"async-book-shelf/src/config"
 	"async-book-shelf/src/failure"
 	"log"
+	"time"
 
 	"github.com/streadway/amqp"
 )
 
-func subscribe(exchangeName, exchangeType, queueName, routingKey string, callback func(content []byte)) {
+func getConnection() (*amqp.Connection, error) {
 	conn, err := amqp.Dial(config.RabbitMQURL)
+
+	if err != nil {
+		for start := time.Now(); err != nil && time.Since(start) < time.Second*config.RabbitMQTimeout; {
+			log.Println("Failed to connect to RabbitMQ. Retrying...")
+			time.Sleep(time.Second * 3)
+			conn, err = amqp.Dial(config.RabbitMQURL)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return conn, nil
+}
+
+func subscribe(exchangeName, exchangeType, queueName, routingKey string, callback func(content []byte)) {
+	conn, err := getConnection()
 	failure.FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 

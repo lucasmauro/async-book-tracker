@@ -4,7 +4,9 @@ import (
 	"async-book-shelf/src/failure"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -12,6 +14,7 @@ const (
 	rabbitmq_port                = "RABBITMQ_PORT"
 	rabbitmq_user                = "RABBITMQ_USER"
 	rabbitmq_password            = "RABBITMQ_PASSWORD"
+	rabbitmq_timeout             = "RABBITMQ_TIMEOUT"
 	rabbitmq_exchangeName        = "RABBITMQ_EXCHANGE_NAME"
 	rabbitmq_exchangeType        = "RABBITMQ_EXCHANGE_TYPE"
 	rabbitmq_insertionRoutingKey = "RABBITMQ_INSERTION_ROUTING_KEY"
@@ -20,6 +23,7 @@ const (
 )
 
 var RabbitMQURL = ""
+var RabbitMQTimeout time.Duration
 var RabbitMQExchangeName = ""
 var RabbitMQExchangeType = ""
 var RabbitMQInsertionRoutingKey = ""
@@ -31,6 +35,7 @@ type rabbitMQ struct {
 	port                string
 	user                string
 	password            string
+	timeout             string
 	exchangeName        string
 	exchangeType        string
 	insertionRoutingKey string
@@ -39,10 +44,12 @@ type rabbitMQ struct {
 }
 
 func (config *rabbitMQ) load() {
+
 	config.address = os.Getenv(rabbitmq_address)
 	config.port = os.Getenv(rabbitmq_port)
 	config.user = os.Getenv(rabbitmq_user)
 	config.password = os.Getenv(rabbitmq_password)
+	config.timeout = os.Getenv(rabbitmq_timeout)
 	config.exchangeName = os.Getenv(rabbitmq_exchangeName)
 	config.exchangeType = os.Getenv(rabbitmq_exchangeType)
 	config.insertionRoutingKey = os.Getenv(rabbitmq_insertionRoutingKey)
@@ -67,6 +74,10 @@ func (config *rabbitMQ) validate() {
 
 	if config.password == "" {
 		invalidVariables = append(invalidVariables, rabbitmq_password)
+	}
+
+	if config.timeout == "" {
+		invalidVariables = append(invalidVariables, rabbitmq_timeout)
 	}
 
 	if config.exchangeName == "" {
@@ -109,4 +120,9 @@ func loadRabbitMQ() {
 	RabbitMQInsertionRoutingKey = config.insertionRoutingKey
 	RabbitMQUpdateRoutingKey = config.updateRoutingKey
 	RabbitMQDeletionRoutingKey = config.deletionRoutingKey
+
+	var err error
+	timeout, err := strconv.ParseInt(config.timeout, 10, 64)
+	RabbitMQTimeout = time.Duration(timeout)
+	failure.FailOnError(err, "Unable to load RabbitMQ")
 }
