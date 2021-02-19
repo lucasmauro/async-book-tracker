@@ -65,6 +65,7 @@ RABBITMQ_ADDRESS=               # Address of the RabbitMQ server
 RABBITMQ_PORT=                  # Port of the RabbitMQ server
 RABBITMQ_USER=                  # User of the RabbitMQ server
 RABBITMQ_PASSWORD=              # Password of the RabbitMQ server
+RABBITMQ_TIMEOUT=               # Connection timeout in seconds
 RABBITMQ_EXCHANGE_NAME=         # Exchange name
 RABBITMQ_EXCHANGE_TYPE=         # Exchange type (prefer 'topic')
 RABBITMQ_INSERTION_ROUTING_KEY= # Key for routing messages to the Insertion queue
@@ -83,3 +84,35 @@ ELASTICSEARCH_INDEX=            # Index name for storing books
 You may compile the project by running `go build` from the root directory, which will generate a binary file called `async-book-shelf`.
 
 It is also possible to invoke Go and run the project with `go run main.go`.
+
+## Docker
+
+  Async Book Shelf is capable of running on Docker. For doing so, you must have Docker installed in your system.
+  Details on Docker installation can be found [here](https://docs.docker.com/get-docker/).
+  
+  This project contains a docker-compose definition with ElasticSearch and RabbitMQ integrations, which may be in your development environment with the following commands:
+  
+  ### Build 
+  
+  After installing Docker, build the image with the following command:
+  
+    $ docker-compose build
+    
+  ### Start
+  
+  After building the image, run Async Book Shelf with the following command:
+  
+    $ docker-compose start
+
+  ### Stop
+
+  For stopping Async Book Shelf, run the following command:
+
+    $ docker-compose stop
+    
+  ### Build and Start
+  
+  It is also possible to build and start the project with a single command.
+  The following command also attaches your terminal to the container and provides you with live log output:
+  
+    $ docker-compose up
